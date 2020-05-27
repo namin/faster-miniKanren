@@ -280,8 +280,12 @@
         [(null? m) st]
         [(assoc (caar m) smtvar-to-mkvar)
          => (lambda (p)
-          (let ((st^ ((== (cdr p) (cdar m)) st)))
-	    ((add-model (cdr m)) st^)))]
+	      (let-values (((s _) (unify (cdr p) (cdar m) (state-S st))))
+	      (let ((st^ (state s
+				(state-C st)
+				(state-M st))))
+				       
+	    ((add-model (cdr m)) st^))))]
         [else ((add-model (cdr m)) st)]
          ))))
 
@@ -294,7 +298,7 @@
                           )) m)])
       (if (null? m)
           fail
-          (z/internal `(assert ,(cadr (neg-model m))))))))
+          (z/assert (cadr (neg-model m)))))))
 
 (define z/purge
   (lambdag@ (st)
