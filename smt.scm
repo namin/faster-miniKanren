@@ -280,7 +280,7 @@
         [(null? m) st]
         [(assoc (caar m) smtvar-to-mkvar)
          => (lambda (p)
-          (let ((st^ (== (cdr p) (cdar m))))
+          (let ((st^ ((== (cdr p) (cdar m)) st)))
 	    ((add-model (cdr m)) st^)))]
         [else ((add-model (cdr m)) st)]
          ))))
@@ -310,6 +310,10 @@
                                (choice
                                  (let ((st^ (state-with-M st '())))
                                    ((add-model m) st^))
-                                 (let ((st^ ((assert-neg-model m) st)))
-                                   ((loop) st^)))))))
+				 (lambda ()
+				   (case-inf ((assert-neg-model m) st)
+				     (() #f)
+				     ((f^) ((loop) (f^)))
+				     ((c^) ((loop) c^))
+				     ((c f^) ((loop) c)))))))))
               st))))))
