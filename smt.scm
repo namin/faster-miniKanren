@@ -282,10 +282,9 @@
          => (lambda (p)
 	      (let-values (((s _) (unify (cdr p) (cdar m) (state-S st))))
 		(and s (let ((st^ (state s
-				(state-C st)
-				(state-M st))))
-				       
-	    ((add-model (cdr m)) st^)))))]
+					 (state-C st)
+					 (state-M st))))
+			 ((add-model (cdr m)) st^)))))]
         [else ((add-model (cdr m)) st)]
          ))))
 
@@ -309,15 +308,19 @@
               #f
               ((let loop ()
                  (lambdag@ (st)
+			   (and st
                            (let ((m (get-model-inc)))
                              (let ((st (state-with-scope st (new-scope))))
-                               (choice
+                               (let ((x
                                  (let ((st^ (state-with-M st '())))
-                                   ((add-model m) st^))
+                                   ((add-model m) st^))))
+				 (if x
+				     (choice x
 				 (lambda ()
 				   (case-inf ((assert-neg-model m) st)
 				     (() #f)
 				     ((f^) ((loop) (f^)))
 				     ((c^) ((loop) c^))
-				     ((c f^) ((loop) c)))))))))
+				     ((c f^) ((loop) c)))))
+				     #f)))))))
               st))))))
