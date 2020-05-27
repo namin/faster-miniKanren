@@ -281,11 +281,11 @@
         [(assoc (caar m) smtvar-to-mkvar)
          => (lambda (p)
 	      (let-values (((s _) (unify (cdr p) (cdar m) (state-S st))))
-	      (let ((st^ (state s
+		(and s (let ((st^ (state s
 				(state-C st)
 				(state-M st))))
 				       
-	    ((add-model (cdr m)) st^))))]
+	    ((add-model (cdr m)) st^)))))]
         [else ((add-model (cdr m)) st)]
          ))))
 
