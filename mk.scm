@@ -1201,8 +1201,18 @@
 
 (define l== (lambda (e1 e2) (fresh () (lift `(== ,e1 ,e2)))))
 
+(define dynamic
+  (lambda xs
+    (lambdag@ (st)
+      (state (state-S st) (state-C st)
+             (L-add-vars xs (state-L st))))))
+
 (define (L-code L) (car L))
 
 (define (L-vars L) (cdr L))
 
 (define (L-add-code x L) (cons (cons x (car L)) (cdr L)))
+
+(define (L-add-vars xs L) (cons (car L) (append L xs)))
+
+(define (dynamic? x st) (memq x (L-vars (state-L st))))
