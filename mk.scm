@@ -190,7 +190,9 @@
 (define state-C (lambda (st) (cadr st)))
 (define state-L (lambda (st) (caddr st)))
 
-(define empty-state (state empty-subst empty-C '()))
+(define empty-L (cons '() '()))
+
+(define empty-state (state empty-subst empty-C empty-L))
 
 (define state-with-scope
   (lambda (st new-scope)
@@ -595,7 +597,7 @@
 (define reify
   (lambda (x)
     (lambda (st)
-      (let* ((L (walk* (state-L st) (state-S st)))
+      (let* ((L (walk* (L-code (state-L st)) (state-S st)))
              (x (if (null? L) x (list x '!! L)))
              (c (c-from-st st x)))
         (let ((c (cycle c)))
@@ -1185,16 +1187,22 @@
 (define lift
   (lambda (x)
     (lambdag@ (st)
-      (state (state-S st) (state-C st) (cons x (state-L st))))))
+      (state (state-S st) (state-C st) (L-add-code x (state-L st))))))
 
 (define lift-scope
   (lambda (g out)
     (lambdag@ (st)
       (bind*
-       (g (state (state-S st) (state-C st) '()))
+       (g (state (state-S st) (state-C st) empty-L))
        (lambdag@ (st2)
          ((fresh ()
-            (== out (walk-lift (state-L st2) (state-S st2))))
+                 (== out (walk-lift (L-code (state-L st2)) (state-S st2))))
           st))))))
 
 (define l== (lambda (e1 e2) (fresh () (lift `(== ,e1 ,e2)))))
+
+(define (L-code L) (car L))
+
+(define (L-vars L) (cdr L))
+
+(define (L-add-code x L) (cons (cons x (car L)) (cdr L)))
