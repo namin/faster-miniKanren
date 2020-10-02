@@ -511,7 +511,8 @@
     (lambdag@ (st)
       (let-values (((S added) (unify u v (state-S st))))
         (if S
-          (and-foldl update-constraints (state S (state-C st) (state-L st)) added)
+            (let-values (((Sp L added) (defer-dynamic (state-S st) (state-L st) added)))
+              (and-foldl update-constraints (state Sp (state-C st) L) added))
           #f)))))
 
 
@@ -1215,4 +1216,13 @@
 
 (define (L-add-vars xs L) (cons (car L) (append L xs)))
 
-(define (dynamic? x st) (memq x (L-vars (state-L st))))
+(define (dynamic? x L) (memq x (cdr L)))
+
+(define (defer-dynamic S L added)
+  (if (null? added)
+      (values S L '())
+      (let-values (((Sp Lp addedp) (defer-dynamic S L (cdr added))))
+        (let ((a (car added)))
+          (if (or (dynamic? (lhs a) L) (dynamic? (rhs a) L))
+              (values Sp (L-add-code `(== ,(lhs a) ,(rhs a)) Lp) addedp)
+              (values (subst-add Sp (lhs a) (rhs a)) Lp (cons a addedp)))))))
