@@ -515,7 +515,7 @@
     (lambdag@ (st)
       (let-values (((S added) (unify u v (subst-with-scope (state-S st) nonlocal-scope))))
         (if S
-            (let-values (((S L added) (defer-dynamic (state-S st) (state-L st) added)))
+            (let-values (((S L added) (defer-dynamic (state-S st) (state-L st) (reverse added))))
               (and-foldl update-constraints (state S (state-C st) L) added))
           #f)))))
 
@@ -1218,7 +1218,7 @@
 
 (define (L-add-code x L) (cons (cons x (car L)) (cdr L)))
 
-(define (L-add-vars xs L) (cons (car L) (append L xs)))
+(define (L-add-vars xs L) (cons (car L) (append (cdr L) xs)))
 
 (define (dynamic? x L) (memq x (cdr L)))
 
