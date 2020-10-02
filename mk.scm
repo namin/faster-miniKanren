@@ -1198,7 +1198,7 @@
   (lambda (g out)
     (lambdag@ (st)
       (bind*
-       (g (state (state-S st) (state-C st) empty-L))
+       (g (state (state-S st) (state-C st) (L-empty-code (state-L st))))
        (lambdag@ (st2)
          ((fresh ()
                  (== out (walk-lift (L-code (state-L st2)) (state-S st2))))
@@ -1219,6 +1219,8 @@
 (define (L-add-code x L) (cons (cons x (car L)) (cdr L)))
 
 (define (L-add-vars xs L) (cons (car L) (append (cdr L) xs)))
+
+(define (L-empty-code L) (cons '() (cdr L)))
 
 (define (dynamic? x L) (memq x (cdr L)))
 
@@ -1246,7 +1248,7 @@
   (syntax-rules ()
     ((_ (g0 g ...) (g1 g^ ...) ...)
      (lambdag@ (st)
-       (let ((r (let ((st2 (state (state-S st) (state-C st) (cons '() (cdr (state-L st))))))
+       (let ((r (let ((st2 (state (state-S st) (state-C st) (L-empty-code (state-L st)))))
                   (append (all-of (bind* (g0 (state-with-scope st2 (new-scope))) g ...))
                           (all-of (bind* (g1 (state-with-scope st2 (new-scope))) g^ ...)) ...))))
          ((lift `(conde ,@(map (lambda (st3) (walk-lift (L-code (state-L st3)) (state-S st3))) r))) st))))))
