@@ -1247,6 +1247,6 @@
     ((_ (g0 g ...) (g1 g^ ...) ...)
      (lambdag@ (st)
        (let ((r (let ((st2 (state (state-S st) (state-C st) (cons '() (cdr (state-L st))))))
-                  (append (all-of (bind* (g0 st2) g ...))
-                          (all-of (bind* (g1 st2) g^ ...)) ...))))
+                  (append (all-of (bind* (g0 (state-with-scope st2 (new-scope))) g ...))
+                          (all-of (bind* (g1 (state-with-scope st2 (new-scope))) g^ ...)) ...))))
          ((lift `(conde ,@(map (lambda (st3) (walk-lift (L-code (state-L st3)) (state-S st3))) r))) st))))))
