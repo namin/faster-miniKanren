@@ -1230,3 +1230,23 @@
           (if (or (dynamic? (lhs a) L) (dynamic? (rhs a) L))
               (values Sp (L-add-code `(== ,(lhs a) ,(rhs a)) Lp) addedp)
               (values (subst-add Sp (lhs a) (rhs a)) Lp (cons a addedp)))))))
+
+(define all-of
+  (lambda (c-inf)
+    (case-inf c-inf
+      (() (list))
+      ((f) (all-of (f)))
+      ((c) (list c))
+      ((c f) (cons c
+                   (all-of f)
+                   )
+       ))))
+
+(define-syntax lconde
+  (syntax-rules ()
+    ((_ (g0 g ...) (g1 g^ ...) ...)
+     (lambdag@ (st)
+       (let ((r (let ((st2 (state (state-S st) (state-C st) (cons '() (cdr (state-L st))))))
+                  (append (all-of (bind* (g0 st2) g ...))
+                          (all-of (bind* (g1 st2) g^ ...)) ...))))
+         ((lift `(conde ,@(map (lambda (st3) (walk-lift (L-code (state-L st3)) (state-S st3))) r))) st))))))
