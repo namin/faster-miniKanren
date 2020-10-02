@@ -509,7 +509,7 @@
 (define ==
   (lambda (u v)
     (lambdag@ (st)
-      (let-values (((S added) (unify u v (subst-scope (state-S st)))))
+      (let-values (((S added) (unify u v (subst-with-scope (state-S st) nonlocal-scope))))
         (if S
             (let-values (((S L added) (defer-dynamic (state-S st) (state-L st) added)))
               (and-foldl update-constraints (state S (state-C st) L) added))
