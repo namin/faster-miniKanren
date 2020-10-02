@@ -452,6 +452,10 @@
 (define =/=*
   (lambda (S+)
     (lambdag@ (st)
+     (if (and (= (length S+) 1)
+              (or (dynamic? (lhs (car S+)) (state-L st))
+                  (dynamic? (rhs (car S+)) (state-L st))))
+         (state (state-S st) (state-C st) (L-add-code `(=/= ,(lhs (car S+)) ,(rhs (car S+))) (state-L st)))
       (let-values (((S added) (unify* S+ (subst-with-scope
                                            (state-S st)
                                            nonlocal-scope))))
@@ -466,7 +470,7 @@
               (let ((st (add-to-D st (car el) added)))
                 (if (var? (cdr el))
                   (add-to-D st (cdr el) added)
-                  st)))))))))
+                  st))))))))))
 
 (define =/=
   (lambda (u v)
