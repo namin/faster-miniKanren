@@ -59,7 +59,7 @@
 
 (define set-c
   (lambda (v c st)
-    (state (state-S st) (hash-set (state-C st) v c))))
+    (state (state-S st) (hash-set (state-C st) v c) (state-X st))))
 
 (define lookup-c
   (lambda (v st)
@@ -67,7 +67,7 @@
 
 (define remove-c
   (lambda (v st)
-    (state (state-S st) (hash-remove (state-C st) v))))
+    (state (state-S st) (hash-remove (state-C st) v) (state-X st))))
 
 
 (include "mk.scm")
