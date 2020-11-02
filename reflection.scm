@@ -1,6 +1,10 @@
 (define (reflecto msg)
   (lambda (st)
-    (state (state-S st) (state-C st) (cons msg (state-X st)))))
+    (cond
+     ((member msg (state-X st))
+      (printf "failure because loop detected!\n")
+      (fail st))
+     (else (state (state-S st) (state-C st) (cons msg (state-X st)))))))
 
 (define inspecto
   (lambda (st)
