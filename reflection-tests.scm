@@ -44,5 +44,5 @@
       '(() () ()))
 
 (test "rfl-loopanyo-2"
-      (run 3 (q) (fresh (x) (rfl-loopanyo2 x (== q '())) inspecto))
-      '(() () ()))
+      (run* (q) (fresh (x) (rfl-loopanyo2 x (== q '())) inspecto))
+      '(()))
